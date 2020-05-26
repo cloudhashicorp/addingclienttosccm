@@ -1,0 +1,24 @@
+#Usage: addToCollection -collectionName "nameofsccmcollection" -filePath "C:\pathtofile\1.txt"
+
+function addToCollection()
+{
+    param(
+    $CollectionName,
+    $filepath
+)
+
+    $servers = get-content $filepath
+    foreach($server in $servers)
+    {
+        try
+        {
+            Add-CMDeviceCollectionDirectMembershipRule -CollectionName $CollectionName -ResourceID $((Get-CMDevice -Name $server).ResourceID)
+            Write-Host "$server Added to $collectionName" -ForegroundColor Green
+        }
+        catch
+        {
+            $ErrorMessage = $_.Exception.Message
+            $FailedItem = $_.Exception.ItemName
+        }
+    }
+}
